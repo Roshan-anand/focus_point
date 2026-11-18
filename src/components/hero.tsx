@@ -1,18 +1,16 @@
-import { useState } from 'react'
 import { ArrowDown } from 'lucide-react'
 
 import type { Frame } from '#/data/portfolio'
 
 export type HeroProps = {
-  frames: readonly Frame[]
+  frame: Frame
+  /** Set once the opening flash has fired; the copy rises in from it. */
+  revealed?: boolean
 }
 
-export function Hero({ frames }: HeroProps) {
-  const [selected, setSelected] = useState(0)
-  const frame = frames[selected]
-
+export function Hero({ frame, revealed = false }: HeroProps) {
   return (
-    <div className="hero">
+    <div className={revealed ? 'hero is-revealed' : 'hero'}>
       <div key={frame.file} className={`exposure exposure-${frame.file}`}>
         <img
           src={`/prints/${frame.file}.webp`}
@@ -36,24 +34,9 @@ export function Hero({ frames }: HeroProps) {
           <a className="scroll" href="#album">
             <ArrowDown size={18} /> Into the album
           </a>
-          <div className="strip" role="group" aria-label="Select a photograph">
-            {frames.map((f, i) => (
-              <button
-                key={f.file}
-                aria-label={f.name}
-                aria-pressed={selected === i}
-                onClick={() => setSelected(i)}
-              >
-                <img src={`/prints/${f.file}.webp`} alt="" />
-              </button>
-            ))}
-          </div>
         </div>
       </div>
-      <div className="frame-caption" aria-live="polite">
-        <span>0{selected + 1} / 03</span>
-        {frame.name}
-      </div>
+      <div className="frame-caption">{frame.name}</div>
     </div>
   )
 }

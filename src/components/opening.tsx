@@ -22,7 +22,12 @@ function huntPoint() {
   }
 }
 
-export function Opening() {
+export type OpeningProps = {
+  /** Called at the peak of the flash, as the hero starts to come up. */
+  onReveal?: () => void
+}
+
+export function Opening({ onReveal }: OpeningProps) {
   const reduced = useReducedMotion()
   const [gone, setGone] = useState(false)
 
@@ -33,11 +38,10 @@ export function Opening() {
   const focusY = useMotionValue(0)
   const focusScale = useMotionValue(1.35)
   const focusOpacity = useMotionValue(0)
-  const shutter = useMotionValue(0)
+  const flash = useMotionValue(0)
+  const flashScale = useMotionValue(1)
 
   const glassFilter = useTransform(blur, (value) => `blur(${value}px)`)
-  const upperY = useTransform(shutter, (value) => `${-101 + value * 101}%`)
-  const lowerY = useTransform(shutter, (value) => `${101 - value * 101}%`)
 
   useEffect(() => {
     if (reduced) {
@@ -71,7 +75,8 @@ export function Opening() {
       focusY.set(0)
       focusScale.set(1.35)
       focusOpacity.set(0)
-      shutter.set(0)
+      flash.set(0)
+      flashScale.set(1)
 
       const stops = [huntPoint(), huntPoint()]
 
@@ -119,18 +124,29 @@ export function Opening() {
       ])
       if (halted()) return
 
-      // Hold the resolved frame for a beat before the shutter falls.
+      // Hold the resolved frame for a beat, then the shutter fires.
       await Promise.all([
         play(animate(focusOpacity, 0, { duration: 0.3, ease: 'easeOut' })),
         wait(1000),
       ])
       if (halted()) return
 
-      await play(animate(shutter, 1, { duration: 0.12, ease: 'easeIn' }))
+      // The flash blanks the frame in an instant.
+      await play(animate(flash, 1, { duration: 0.08, ease: 'easeIn' }))
       if (halted()) return
-      await play(animate(glassOpacity, 0, { duration: 0.2, ease: 'easeOut' }))
+
+      // Under the whiteout the viewfinder is already gone and the hero
+      // starts its own slow rise.
+      glassOpacity.set(0)
+      onReveal?.()
+      await wait(80)
       if (halted()) return
-      await play(animate(shutter, 0, { duration: 0.18, ease: 'easeIn' }))
+
+      // The flash burns off slowly, and the hero comes up in its place.
+      await Promise.all([
+        play(animate(flash, 0, { duration: 2.2, ease: 'easeInOut' })),
+        play(animate(flashScale, 1.06, { duration: 2.2, ease: 'easeInOut' })),
+      ])
       if (halted()) return
       setGone(true)
     }
@@ -151,7 +167,9 @@ export function Opening() {
     focusY,
     focusScale,
     focusOpacity,
-    shutter,
+    flash,
+    flashScale,
+    onReveal,
   ])
 
   if (gone) return null
@@ -180,8 +198,10 @@ export function Opening() {
         <i />
         <i />
       </motion.div>
-      <motion.div className="blade upper" style={{ y: upperY }} />
-      <motion.div className="blade lower" style={{ y: lowerY }} />
+      <motion.div
+        className="flash"
+        style={{ opacity: flash, scale: flashScale }}
+      />
     </div>
   )
 }

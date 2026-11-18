@@ -76,7 +76,6 @@ h2 {
   overflow-wrap: break-word;
   min-width: 0;
 }
-.mast,
 .colophon,
 .heading,
 .hero-foot,
@@ -84,19 +83,6 @@ figcaption {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-.mast {
-  max-width: 1440px;
-  margin: auto;
-  padding: 20px var(--gutter);
-  font-size: 12px;
-}
-.mast span:first-child {
-  font: 20px var(--serif);
-  letter-spacing: -0.04em;
-}
-.mast span:last-child {
-  color: var(--muted);
 }
 .hero {
   color: var(--paper);
@@ -180,24 +166,6 @@ footer a {
 .scroll:hover svg {
   transform: translateY(3px);
 }
-.strip {
-  display: flex;
-  gap: 8px;
-}
-.strip button {
-  padding: 4px;
-  background: var(--night);
-  border: 1px solid var(--line);
-  cursor: pointer;
-}
-.strip button[aria-pressed='true'] {
-  border-color: var(--paper);
-}
-.strip img {
-  width: 38px;
-  height: 46px;
-  object-fit: cover;
-}
 .frame-caption {
   position: absolute;
   right: var(--gutter);
@@ -206,10 +174,6 @@ footer a {
   gap: 12px;
   font: italic 16px var(--serif);
   text-shadow: 0 1px 6px var(--night);
-}
-.frame-caption span {
-  align-self: center;
-  font: 11px var(--sans);
 }
 article,
 .keepsake {
@@ -387,17 +351,30 @@ footer a {
     left: 0;
     rotate: 270deg;
   }
-  .blade {
+  .flash {
     position: absolute;
-    background: var(--ink);
-    width: 100%;
-    height: 51%;
+    inset: 0;
+    background: var(--paper);
+    transform-origin: 50% 42%;
   }
-  .upper {
-    top: 0;
+  .is-revealed .title {
+    animation: rise 2200ms 120ms cubic-bezier(0.4, 0, 0.2, 1) both;
   }
-  .lower {
-    bottom: 0;
+  .is-revealed .hero-foot {
+    animation: rise 2200ms 360ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  .is-revealed .frame-caption {
+    animation: rise 2200ms 240ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 34px;
+    }
+    to {
+      opacity: 1;
+      translate: 0;
+    }
   }
   @keyframes expose {
     from {
@@ -428,15 +405,6 @@ footer a {
   }
 }
 @media (max-width: 680px) {
-  .mast {
-    padding: 16px 20px;
-  }
-  .mast span:first-child {
-    font-size: 16px;
-  }
-  .mast span:last-child {
-    font-size: 10px;
-  }
   .hero-inner {
     height: clamp(610px, 83svh, 810px);
     align-items: end;
@@ -471,10 +439,6 @@ footer a {
   .frame-caption {
     top: 16px;
     font-size: 13px;
-  }
-  .strip img {
-    width: 28px;
-    height: 37px;
   }
   .heading {
     display: block;
@@ -554,9 +518,4 @@ footer a {
     animation: none !important;
     transition: none !important;
   }
-}
-
-.strip button:disabled {
-  opacity: 0.5;
-  cursor: default;
 }
