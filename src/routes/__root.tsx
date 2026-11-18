@@ -15,6 +15,11 @@ export const Route = createRootRoute({
       {
         title: 'Focus Point Photography — Sullia',
       },
+      {
+        name: 'description',
+        content:
+          'Wedding portraits, quiet gestures and finished prints from Focus Point Photography in Sullia, Karnataka.',
+      },
     ],
     links: [
       {
