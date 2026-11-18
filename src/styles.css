@@ -347,7 +347,6 @@ footer a {
     z-index: 5;
     overflow: hidden;
     pointer-events: none;
-    animation: retire 1.55s both;
   }
   .focus-glass {
     position: absolute;
@@ -355,13 +354,12 @@ footer a {
     background:
       linear-gradient(var(--shadow), var(--shade)),
       var(--night) url('/prints/portrait.webp') center 42% / cover;
-    animation: resolve 1.5s both;
+    transform-origin: 50% 42%;
   }
   .lock {
     width: 72px;
     height: 72px;
     position: relative;
-    animation: lock 1s both;
   }
   .lock i {
     width: 15px;
@@ -397,65 +395,9 @@ footer a {
   }
   .upper {
     top: 0;
-    --off: -101%;
-    animation: blink 1.5s both;
   }
   .lower {
     bottom: 0;
-    --off: 101%;
-    animation: blink 1.5s both;
-  }
-  @keyframes retire {
-    0%,
-    98% {
-      visibility: visible;
-    }
-    100% {
-      visibility: hidden;
-    }
-  }
-  @keyframes resolve {
-    0% {
-      filter: blur(8px);
-    }
-    50% {
-      filter: blur(0);
-    }
-    65% {
-      opacity: 1;
-    }
-    71%,
-    100% {
-      opacity: 0;
-    }
-  }
-  @keyframes lock {
-    from {
-      opacity: 0;
-      transform: scale(1.4);
-    }
-    30%,
-    70% {
-      opacity: 1;
-    }
-    65%,
-    100% {
-      transform: scale(0.85);
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-  @keyframes blink {
-    0%,
-    54%,
-    100% {
-      transform: translateY(var(--off));
-    }
-    68%,
-    72% {
-      transform: translateY(0);
-    }
   }
   @keyframes expose {
     from {
