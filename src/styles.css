@@ -3,6 +3,7 @@
 @import '@fontsource/baskervville/latin-400.css';
 @import '@fontsource/baskervville/latin-400-italic.css';
 @import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-900.css';
 :root {
   --ink: #121417;
   --night: #101411;
@@ -508,6 +509,290 @@ footer a {
     width: 92px;
   }
 }
+
+/* Photo Shuffle / Interactive Scatter Deck */
+.shuffle-section {
+  position: relative;
+  background: #090a0c;
+  padding: clamp(70px, 9vw, 120px) 0 clamp(80px, 10vw, 130px);
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: clamp(60px, 8vw, 100px);
+}
+
+.shuffle-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.shuffle-header {
+  text-align: center;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.shuffle-kicker {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.shuffle-heading {
+  font-family: var(--sans);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: clamp(36px, 6.5vw, 92px);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  margin: 0 auto;
+  text-wrap: balance;
+}
+
+.shuffle-subtext {
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 18px;
+  letter-spacing: -0.01em;
+  opacity: 0.85;
+}
+
+.shuffle-stage {
+  --card-w: 290px;
+  --card-h: 360px;
+  --scatter-scale: 1;
+  position: relative;
+  width: 100%;
+  height: clamp(520px, 64vh, 640px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 48px;
+  user-select: none;
+}
+
+.shuffle-center-anchor {
+  position: relative;
+  width: var(--card-w);
+  height: var(--card-h);
+}
+
+.shuffle-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  outline: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  transform-origin: center center;
+}
+
+.shuffle-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.shuffle-card-inner {
+  background: #ffffff;
+  padding: 12px 12px 34px 12px;
+  border-radius: 2px;
+  box-shadow:
+    0 10px 24px -6px rgba(0, 0, 0, 0.5),
+    0 24px 52px -10px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.25s ease;
+}
+
+.shuffle-card:active .shuffle-card-inner {
+  box-shadow:
+    0 20px 40px -8px rgba(0, 0, 0, 0.65),
+    0 36px 72px -12px rgba(0, 0, 0, 0.55);
+}
+
+.shuffle-photo-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 4.4;
+  overflow: hidden;
+  background: #14171a;
+}
+
+.shuffle-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.shuffle-card-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 0 2px;
+  font-family: var(--sans);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.shuffle-location {
+  font-weight: 600;
+  color: #1e2225;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.shuffle-meta {
+  font-size: 9px;
+  color: #71777e;
+  white-space: nowrap;
+}
+
+.shuffle-center-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+.shuffle-circle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--paper);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  transition:
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.shuffle-circle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: rotate(-90deg) scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.shuffle-circle-btn:active {
+  transform: rotate(-90deg) scale(0.95);
+}
+
+.shuffle-circle-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.shuffle-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shuffle-empty-card {
+  text-align: center;
+  padding: 36px 28px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  width: 100%;
+}
+
+.shuffle-empty-icon {
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.shuffle-empty-card h3 {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.shuffle-empty-card p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 20px 0;
+}
+
+.shuffle-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper);
+  color: var(--bark);
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.shuffle-reset-btn:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 680px) {
+  .shuffle-stage {
+    --card-w: 220px;
+    --card-h: 275px;
+    --scatter-scale: 0.42;
+    height: clamp(420px, 56vh, 490px);
+    margin-top: 32px;
+  }
+  .shuffle-card-inner {
+    padding: 9px 9px 28px 9px;
+  }
+  .shuffle-card-caption {
+    font-size: 9px;
+    margin-top: 8px;
+  }
+  .shuffle-meta {
+    font-size: 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -6,6 +6,7 @@ import { FieldSection } from '#/components/field-section'
 import { Hero } from '#/components/hero'
 import { KeepsakeSection } from '#/components/keepsake-section'
 import { Opening } from '#/components/opening'
+import { PhotoShuffle } from '#/components/photo-shuffle'
 import { SiteFooter } from '#/components/site-footer'
 import { PORTRAIT_FRAME } from '#/data/portfolio'
 
@@ -22,6 +23,7 @@ function Home() {
       <AlbumSection />
       <FieldSection />
       <KeepsakeSection />
+      <PhotoShuffle />
       <SiteFooter />
     </main>
   )
