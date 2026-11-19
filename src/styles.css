@@ -597,6 +597,19 @@ footer a {
   justify-content: center;
   margin-top: 48px;
   user-select: none;
+  transition:
+    height 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    margin-top 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Quiet finish: the pile is gone, so let the stage collapse and breathe */
+.shuffle-stage[data-empty='true'] {
+  height: clamp(96px, 14vh, 140px);
+  margin-top: 28px;
+}
+
+.shuffle-stage[data-empty='true'] .shuffle-center-anchor {
+  display: none;
 }
 
 .shuffle-center-anchor {
@@ -625,7 +638,10 @@ footer a {
 
 .shuffle-card-inner {
   background: #ffffff;
-  padding: 12px 12px 34px 12px;
+  padding: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   border-radius: 2px;
   box-shadow:
     0 10px 24px -6px rgba(0, 0, 0, 0.5),
@@ -643,7 +659,8 @@ footer a {
 .shuffle-photo-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 4.4;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
   background: #14171a;
 }
@@ -657,39 +674,18 @@ footer a {
   -webkit-user-drag: none;
 }
 
-.shuffle-card-caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 12px;
-  padding: 0 2px;
-  font-family: var(--sans);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  line-height: 1;
-}
-
-.shuffle-location {
-  font-weight: 600;
-  color: #1e2225;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 60%;
-}
-
-.shuffle-meta {
-  font-size: 9px;
-  color: #71777e;
-  white-space: nowrap;
-}
-
 .shuffle-center-action {
+  position: relative;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 36px;
+  transition: margin-top 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shuffle-center-action[data-empty='true'] {
+  margin-top: 18px;
 }
 
 .shuffle-circle-btn {
@@ -704,12 +700,44 @@ footer a {
   border: 1px solid rgba(255, 255, 255, 0.14);
   cursor: pointer;
   transition:
+    width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.2s ease,
     color 0.2s ease,
     background 0.2s ease,
     box-shadow 0.2s ease;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Empty deck: the button becomes the single, unmistakable focal point */
+.shuffle-center-action[data-empty='true'] .shuffle-circle-btn {
+  width: 64px;
+  height: 64px;
+  color: var(--gold);
+  border-color: color-mix(in srgb, var(--gold) 55%, transparent);
+  background: color-mix(in srgb, var(--gold) 7%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 16%, transparent),
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    0 0 34px color-mix(in srgb, var(--gold) 18%, transparent);
+  animation: shuffle-breathe 3.4s ease-in-out infinite;
+}
+
+@keyframes shuffle-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--gold) 14%, transparent),
+      0 10px 30px rgba(0, 0, 0, 0.45),
+      0 0 26px color-mix(in srgb, var(--gold) 12%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--gold) 26%, transparent),
+      0 10px 30px rgba(0, 0, 0, 0.45),
+      0 0 48px color-mix(in srgb, var(--gold) 26%, transparent);
+  }
 }
 
 .shuffle-circle-btn:hover {
@@ -729,65 +757,16 @@ footer a {
   outline-offset: 4px;
 }
 
-.shuffle-empty {
+.shuffle-sr-only {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.shuffle-empty-card {
-  text-align: center;
-  padding: 36px 28px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.16);
-  border-radius: 4px;
-  width: 100%;
-}
-
-.shuffle-empty-icon {
-  color: var(--gold);
-  margin-bottom: 12px;
-}
-
-.shuffle-empty-card h3 {
-  font-family: var(--sans);
-  font-weight: 700;
-  font-size: 16px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #ffffff;
-  margin: 0 0 8px 0;
-}
-
-.shuffle-empty-card p {
-  font-size: 13px;
-  color: var(--muted);
-  margin: 0 0 20px 0;
-}
-
-.shuffle-reset-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--paper);
-  color: var(--bark);
-  border: none;
-  border-radius: 9999px;
-  padding: 10px 20px;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-.shuffle-reset-btn:hover {
-  background: #ffffff;
-  transform: translateY(-1px);
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 680px) {
@@ -799,14 +778,7 @@ footer a {
     margin-top: 32px;
   }
   .shuffle-card-inner {
-    padding: 9px 9px 28px 9px;
-  }
-  .shuffle-card-caption {
-    font-size: 9px;
-    margin-top: 8px;
-  }
-  .shuffle-meta {
-    font-size: 8px;
+    padding: 9px;
   }
 }
 
