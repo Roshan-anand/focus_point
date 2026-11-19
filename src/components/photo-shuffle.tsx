@@ -1,6 +1,8 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { RotateCcw, Sparkles } from 'lucide-react'
+import type { Ref } from 'react'
+import { RotateCcw } from 'lucide-react'
 import {
+  AnimatePresence,
   animate,
   motion,
   useMotionValue,
@@ -13,8 +15,6 @@ export type ShufflePhoto = {
   initialIndex: number
   src: string
   alt: string
-  location: string
-  camera: string
   initRotate: number
   initX: number
   initY: number
@@ -25,85 +25,61 @@ const RAW_PHOTOS = [
     id: 'bride-laugh',
     src: '/story/bride-laugh.webp',
     alt: 'Bride laughing during an unposed moment in the courtyard',
-    location: '⊙ Sullia Courtyard',
-    camera: 'Sony a6400 · 30mm · ƒ/2.0',
   },
   {
     id: 'portrait-lamp',
     src: '/story/portrait-lamp.webp',
     alt: 'Portrait illuminated by warm ambient lantern light',
-    location: '⊙ Kodagu Ghats',
-    camera: 'Sony α7 IV · 35mm · ƒ/1.4',
   },
   {
     id: 'child-krishna',
     src: '/story/child-krishna.webp',
     alt: 'Young child in traditional attire by the temple steps',
-    location: '⊙ Subrahmanya Temple',
-    camera: 'Leica Q2 · 28mm · ƒ/1.7',
   },
   {
     id: 'couple-walk',
     src: '/story/couple-walk.webp',
     alt: 'Couple walking along the hillside crossing',
-    location: '⊙ Payaswini Crossing',
-    camera: 'Sony α7 IV · 50mm · ƒ/1.8',
   },
   {
     id: 'bride-green',
     src: '/story/bride-green.webp',
     alt: 'Bride against deep emerald foliage in the Western Ghats',
-    location: '⊙ Western Ghats',
-    camera: 'Fujifilm X-T5 · 56mm · ƒ/1.2',
   },
   {
     id: 'groom-chair',
     src: '/story/groom-chair.webp',
     alt: 'Groom resting on the studio verandah in the shade',
-    location: '⊙ Studio Verandah',
-    camera: 'Sony α7 IV · 35mm · ƒ/1.4',
   },
   {
     id: 'child-bath',
     src: '/story/child-bath.webp',
     alt: 'Child playing in the morning courtyard sunlight',
-    location: '⊙ Ancestral Home',
-    camera: 'Sony a6400 · 30mm · ƒ/2.0',
   },
   {
     id: 'couple-ivory',
     src: '/story/couple-ivory.webp',
     alt: 'Couple holding hands framed by an overarching forest canopy',
-    location: '⊙ Bisle Canopy',
-    camera: 'Sony α7 IV · 85mm · ƒ/1.8',
   },
   {
     id: 'child-grass',
     src: '/story/child-grass.webp',
     alt: 'Child running through meadow grasses in Sampaje',
-    location: '⊙ Sampaje Meadow',
-    camera: 'Sony a6400 · 50mm · ƒ/1.8',
   },
   {
     id: 'smile',
     src: '/prints/smile.webp',
     alt: 'Candid warm portrait smile in the studio',
-    location: '⊙ Focus Point Studio',
-    camera: 'Sony α7 IV · 50mm · ƒ/1.4',
   },
   {
     id: 'jasmine',
     src: '/prints/jasmine.webp',
     alt: 'Bride adjusting fresh jasmine garland',
-    location: '⊙ Bride Dressing Room',
-    camera: 'Sony α7 IV · 35mm · ƒ/1.4',
   },
   {
     id: 'print-handover',
     src: '/story/print-handover.webp',
     alt: 'Hands holding a freshly bound photography album',
-    location: '⊙ The Finished Album',
-    camera: 'Sony α7 IV · 35mm · ƒ/2.8',
   },
 ] as const
 
@@ -207,6 +183,7 @@ type DraggableCardProps = {
   reducedMotion: boolean | null
   onDismiss: (id: string) => void
   onBringToFront: (id: string) => void
+  cardRef?: Ref<HTMLDivElement>
 }
 
 const DraggableCard = memo(function DraggableCard({
@@ -215,6 +192,7 @@ const DraggableCard = memo(function DraggableCard({
   reducedMotion,
   onDismiss,
   onBringToFront,
+  cardRef,
 }: DraggableCardProps) {
   const x = useMotionValue(0)
   const y = useMotionValue(0)
@@ -319,6 +297,7 @@ const DraggableCard = memo(function DraggableCard({
 
   return (
     <motion.div
+      ref={cardRef}
       tabIndex={0}
       role="button"
       aria-label={`${card.alt}. Drag or flick off screen to dismiss.`}
@@ -366,10 +345,6 @@ const DraggableCard = memo(function DraggableCard({
             className="shuffle-photo"
           />
         </div>
-        <div className="shuffle-card-caption">
-          <span className="shuffle-location">{card.location}</span>
-          <span className="shuffle-meta">{card.camera}</span>
-        </div>
       </div>
     </motion.div>
   )
@@ -391,6 +366,12 @@ export function PhotoShuffle() {
   })
 
   const topZRef = useRef(RAW_PHOTOS.length + 10)
+  const resetRef = useRef<HTMLButtonElement>(null)
+  const firstCardRef = useRef<HTMLDivElement>(null)
+  const prevCountRef = useRef<number>(RAW_PHOTOS.length)
+  const mountedRef = useRef(false)
+
+  const isEmpty = cards.length === 0
 
   const handleDismiss = useCallback((id: string) => {
     setCards((prev) => prev.filter((c) => c.id !== id))
@@ -424,68 +405,89 @@ export function PhotoShuffle() {
     handleReset()
   }, [handleReset])
 
+  // When the last print leaves, hand focus to the only remaining control
+  useEffect(() => {
+    if (prevCountRef.current > 0 && cards.length === 0) {
+      resetRef.current?.focus()
+    }
+    prevCountRef.current = cards.length
+  }, [cards.length])
+
+  // After a reshuffle, send focus back to the top photograph
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true
+      return
+    }
+    const timer = window.setTimeout(() => firstCardRef.current?.focus(), 60)
+    return () => window.clearTimeout(timer)
+  }, [deckKey])
+
   return (
-    <section className="shuffle-section" aria-label="Interactive Photo Stack">
+    <section
+      className="shuffle-section"
+      aria-label="The unposed roll — an interactive pile of photographs"
+    >
       <div className="shuffle-container">
         <header className="shuffle-header">
-          <span className="shuffle-kicker">Candid Moments &amp; Outtakes</span>
+          <span className="shuffle-kicker">The unposed roll</span>
           <h2 className="shuffle-heading">
-            WHAT I DO WHEN
+            THE MOMENTS
             <br />
-            NOBODY NEEDS A LOGO.
+            BETWEEN POSES.
           </h2>
-          <p className="shuffle-subtext">
-            Drag, tilt or flick any photograph out of the frame to shuffle the
-            pile.
-          </p>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key={isEmpty ? 'empty' : 'active'}
+              className="shuffle-subtext"
+              initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+              transition={
+                reducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.22, ease: 'easeOut' }
+              }
+            >
+              {isEmpty
+                ? 'That’s the whole roll — deal it again.'
+                : 'Drag a print off the pile — the ones underneath are just as honest.'}
+            </motion.p>
+          </AnimatePresence>
         </header>
 
-        <div className="shuffle-stage">
+        <div className="shuffle-stage" data-empty={isEmpty}>
           <div className="shuffle-center-anchor">
-            {cards.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="shuffle-empty"
-              >
-                <div className="shuffle-empty-card">
-                  <Sparkles size={28} className="shuffle-empty-icon" />
-                  <h3>All Prints Dispersed</h3>
-                  <p>Every photograph found its way off the desk.</p>
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="shuffle-reset-btn"
-                  >
-                    <RotateCcw size={16} /> Reshuffle Deck
-                  </button>
-                </div>
-              </motion.div>
-            ) : (
-              cards.map((card) => (
-                <DraggableCard
-                  key={`${deckKey}-${card.id}`}
-                  card={card}
-                  zIndex={zMap[card.id] ?? cards.length - card.initialIndex}
-                  reducedMotion={reducedMotion}
-                  onDismiss={handleDismiss}
-                  onBringToFront={handleBringToFront}
-                />
-              ))
-            )}
+            {cards.map((card) => (
+              <DraggableCard
+                key={`${deckKey}-${card.id}`}
+                card={card}
+                zIndex={zMap[card.id] ?? cards.length - card.initialIndex}
+                reducedMotion={reducedMotion}
+                onDismiss={handleDismiss}
+                onBringToFront={handleBringToFront}
+                cardRef={card.initialIndex === 0 ? firstCardRef : undefined}
+              />
+            ))}
           </div>
         </div>
 
-        <div className="shuffle-center-action">
+        <p className="shuffle-sr-only" role="status" aria-live="polite">
+          {isEmpty
+            ? 'Deck finished. Reshuffle to see the photographs again.'
+            : ''}
+        </p>
+
+        <div className="shuffle-center-action" data-empty={isEmpty}>
           <button
+            ref={resetRef}
             type="button"
             onClick={handleReset}
             className="shuffle-circle-btn"
             aria-label="Reshuffle deck"
             title="Reshuffle deck"
           >
-            <RotateCcw size={19} strokeWidth={1.8} />
+            <RotateCcw size={isEmpty ? 22 : 19} strokeWidth={1.8} />
           </button>
         </div>
       </div>
