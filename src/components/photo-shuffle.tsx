@@ -369,7 +369,7 @@ export function PhotoShuffle() {
   const resetRef = useRef<HTMLButtonElement>(null)
   const firstCardRef = useRef<HTMLDivElement>(null)
   const prevCountRef = useRef<number>(RAW_PHOTOS.length)
-  const mountedRef = useRef(false)
+  const userReshuffledRef = useRef(false)
 
   const isEmpty = cards.length === 0
 
@@ -413,13 +413,22 @@ export function PhotoShuffle() {
     prevCountRef.current = cards.length
   }, [cards.length])
 
-  // After a reshuffle, send focus back to the top photograph
+  // After the visitor reshuffles, send focus back to the top photograph.
+  // The mount-time handleReset() also bumps deckKey, so guard on an actual
+  // user action — otherwise the deck steals focus and the page scrolls
+  // down to it on load.
+  const handleUserReshuffle = useCallback(() => {
+    userReshuffledRef.current = true
+    handleReset()
+  }, [handleReset])
+
   useEffect(() => {
-    if (!mountedRef.current) {
-      mountedRef.current = true
-      return
-    }
-    const timer = window.setTimeout(() => firstCardRef.current?.focus(), 60)
+    if (!userReshuffledRef.current) return
+    userReshuffledRef.current = false
+    const timer = window.setTimeout(
+      () => firstCardRef.current?.focus({ preventScroll: true }),
+      60,
+    )
     return () => window.clearTimeout(timer)
   }, [deckKey])
 
@@ -482,7 +491,7 @@ export function PhotoShuffle() {
           <button
             ref={resetRef}
             type="button"
-            onClick={handleReset}
+            onClick={handleUserReshuffle}
             className="shuffle-circle-btn"
             aria-label="Reshuffle deck"
             title="Reshuffle deck"
