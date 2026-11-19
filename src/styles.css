@@ -574,9 +574,13 @@ footer a {
 /* Photo Shuffle / Interactive Scatter Deck */
 .shuffle-section {
   position: relative;
+  width: 100%;
+  border-radius: 0;
   background: var(--stage);
   padding: clamp(70px, 9vw, 120px) 0 clamp(80px, 10vw, 130px);
   overflow: hidden;
+  border-top: 1px solid var(--panel-line);
+  border-bottom: 1px solid var(--panel-line);
 }
 
 .shuffle-container {
@@ -683,7 +687,7 @@ footer a {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 2px;
+  border-radius: 0;
   box-shadow:
     0 10px 24px -6px rgba(0, 0, 0, 0.5),
     0 24px 52px -10px rgba(0, 0, 0, 0.45);
@@ -704,6 +708,7 @@ footer a {
   min-height: 0;
   overflow: hidden;
   background: #14171a;
+  border-radius: 0;
 }
 
 .shuffle-photo {
@@ -713,6 +718,7 @@ footer a {
   display: block;
   pointer-events: none;
   -webkit-user-drag: none;
+  border-radius: 0;
 }
 
 .shuffle-center-action {

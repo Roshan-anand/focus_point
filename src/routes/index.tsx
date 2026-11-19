@@ -24,9 +24,9 @@ function Home() {
         <AlbumSection />
         <FieldSection />
         <KeepsakeSection />
-        <PhotoShuffle />
-        <SiteFooter />
       </div>
+      <PhotoShuffle />
+      <SiteFooter />
     </main>
   )
 }
