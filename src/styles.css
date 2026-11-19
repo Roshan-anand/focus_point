@@ -21,6 +21,13 @@
   --serif: Baskervville, Georgia, serif;
   --sans: Inter, Arial, sans-serif;
   --gutter: clamp(24px, 6vw, 88px);
+  --radius: clamp(20px, 2.4vw, 34px);
+  --panel-gap: clamp(16px, 2vw, 32px);
+  --panel-inset: var(--gutter);
+  --panel-shift: clamp(12px, 1.8vw, 44px);
+  --panel-line: #ffffff14;
+  --panel-line-paper: #00000012;
+  --stage: #0a0d0b;
 }
 * {
   box-sizing: border-box;
@@ -30,17 +37,46 @@ body {
   overflow-x: clip;
 }
 html {
+  background: var(--night);
   scroll-behavior: smooth;
 }
 body {
-  background: var(--ink);
+  background: var(--night);
   color: var(--paper);
   font: 16px var(--sans);
   margin: 0;
 }
 main {
-  max-width: 1440px;
-  margin: auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--night);
+}
+.panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--panel-gap);
+  padding: var(--panel-gap) 0 calc(var(--panel-gap) * 2);
+}
+.panel {
+  width: min(1440px, calc(100% - 2 * var(--panel-inset)));
+  margin-inline: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--panel-line);
+  overflow: hidden;
+}
+.panel-paper {
+  border-color: var(--panel-line-paper);
+}
+.panel-dark {
+  color: var(--paper);
+}
+@media (min-width: 681px) {
+  .panels > :nth-child(odd):not(footer) {
+    translate: calc(-1 * var(--panel-shift)) 0;
+  }
+  .panels > :nth-child(even):not(footer) {
+    translate: var(--panel-shift) 0;
+  }
 }
 figure,
 h1,
@@ -104,6 +140,7 @@ figcaption {
   margin-left: auto;
   object-fit: cover;
   object-position: 50% 39%;
+  transform: translateX(4%);
 }
 .exposure:after {
   content: '';
@@ -283,6 +320,7 @@ footer a:hover {
   margin-top: 24px;
 }
 footer {
+  width: 100%;
   text-align: center;
   padding-bottom: 28px;
 }
@@ -417,6 +455,11 @@ footer a {
   }
 }
 @media (max-width: 680px) {
+  :root {
+    --radius: 14px;
+    --panel-gap: 8px;
+    --panel-inset: 0px;
+  }
   .hero-inner {
     height: clamp(610px, 83svh, 810px);
     align-items: end;
@@ -426,13 +469,14 @@ footer a {
     width: 100%;
     height: 79%;
     object-position: 50% 32%;
+    transform: none;
   }
   .exposure:after {
     background: linear-gradient(
       0deg,
-      var(--night) 20%,
-      var(--shade) 31%,
-      var(--faint) 63%
+      var(--night) 24%,
+      var(--shade) 38%,
+      var(--faint) 66%
     );
   }
   h1 {
@@ -530,12 +574,9 @@ footer a {
 /* Photo Shuffle / Interactive Scatter Deck */
 .shuffle-section {
   position: relative;
-  background: #090a0c;
+  background: var(--stage);
   padding: clamp(70px, 9vw, 120px) 0 clamp(80px, 10vw, 130px);
   overflow: hidden;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  margin-top: clamp(60px, 8vw, 100px);
 }
 
 .shuffle-container {

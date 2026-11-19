@@ -2,7 +2,7 @@ import { Plate } from '#/components/plate'
 
 export function KeepsakeSection() {
   return (
-    <section className="keepsake">
+    <section className="keepsake panel panel-paper">
       <div className="sheet">
         <div className="mount">
           <Plate

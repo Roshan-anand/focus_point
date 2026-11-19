@@ -434,7 +434,7 @@ export function PhotoShuffle() {
 
   return (
     <section
-      className="shuffle-section"
+      className="shuffle-section panel panel-dark"
       aria-label="The unposed roll — an interactive pile of photographs"
     >
       <div className="shuffle-container">

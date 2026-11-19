@@ -3,7 +3,7 @@ import { EMBRACE_FRAME } from '#/data/portfolio'
 
 export function FieldSection() {
   return (
-    <section className="field">
+    <section className="field panel panel-dark">
       <div className="sheet">
         <div className="pair">
           <div className="field-first">

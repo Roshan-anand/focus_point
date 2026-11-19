@@ -20,11 +20,13 @@ function Home() {
     <main>
       <Opening onReveal={reveal} />
       <Hero frame={PORTRAIT_FRAME} revealed={revealed} />
-      <AlbumSection />
-      <FieldSection />
-      <KeepsakeSection />
-      <PhotoShuffle />
-      <SiteFooter />
+      <div className="panels">
+        <AlbumSection />
+        <FieldSection />
+        <KeepsakeSection />
+        <PhotoShuffle />
+        <SiteFooter />
+      </div>
     </main>
   )
 }

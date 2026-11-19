@@ -3,7 +3,7 @@ import { JASMINE_FRAME } from '#/data/portfolio'
 
 export function AlbumSection() {
   return (
-    <article id="album">
+    <article id="album" className="panel panel-paper">
       <div className="sheet">
         <div className="heading">
           <h2>
