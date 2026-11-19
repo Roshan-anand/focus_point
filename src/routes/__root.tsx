@@ -35,6 +35,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        {/* The page opens with an intro over the hero, so a fresh mount must
+            start at the top instead of restoring the previous scroll. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "history.scrollRestoration='manual'",
+          }}
+        />
         <HeadContent />
       </head>
       <body>
