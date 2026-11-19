@@ -10,6 +10,7 @@ export function WhatsAppCta() {
         aria-label="Chat with Focus Point Photography on WhatsApp"
       >
         <svg
+          className="whatsapp-icon"
           width={20}
           height={20}
           viewBox="0 0 24 24"

@@ -1,5 +1,6 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 
+import { SiteNav } from '#/components/site-nav'
 import { WhatsAppCta } from '#/components/whatsapp-cta'
 import appCss from '../styles.css?url'
 
@@ -46,6 +47,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <SiteNav />
         {children}
         <WhatsAppCta />
         <Scripts />
