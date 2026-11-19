@@ -7,6 +7,9 @@ export type Frame = {
 export const INSTAGRAM_URL = 'https://www.instagram.com/'
 export const STUDIO_INSTAGRAM_URL = `${INSTAGRAM_URL}focus_point_sullia/`
 
+export const WHATSAPP_NUMBER = '918277034743'
+export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`
+
 export const PORTRAIT_FRAME: Frame = {
   name: 'The portrait',
   file: 'portrait',

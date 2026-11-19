@@ -27,7 +27,7 @@ export function Hero({ frame, revealed = false }: HeroProps) {
           </h1>
           <div className="signature">
             <b />
-            <img src="/prints/signature.png" alt="Focus Point Photography" />
+            <span className="signature-text">Focus Point</span>
           </div>
         </div>
         <div className="hero-foot">
@@ -36,7 +36,6 @@ export function Hero({ frame, revealed = false }: HeroProps) {
           </a>
         </div>
       </div>
-      <div className="frame-caption">{frame.name}</div>
     </div>
   )
 }
