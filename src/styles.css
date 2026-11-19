@@ -129,6 +129,17 @@ figcaption {
 }
 .title {
   position: relative;
+  z-index: 1;
+}
+/* Lightweight lift: soft blurred shadows falling down-right onto the
+   portrait, so the headline reads as floating just above the photograph
+   rather than being printed into it. */
+.title h1 {
+  color: var(--paper);
+  text-shadow:
+    1px 3px 8px rgba(6, 9, 7, 0.5),
+    6px 10px 24px rgba(6, 9, 7, 0.42),
+    18px 26px 56px rgba(6, 9, 7, 0.4);
 }
 .signature {
   display: flex;
@@ -426,6 +437,12 @@ footer a {
   }
   h1 {
     font-size: clamp(62px, 14vw, 90px);
+  }
+  .title h1 {
+    text-shadow:
+      1px 2px 6px rgba(6, 9, 7, 0.5),
+      4px 7px 18px rgba(6, 9, 7, 0.42),
+      10px 16px 36px rgba(6, 9, 7, 0.38);
   }
   .signature {
     margin-top: 16px;

@@ -107,6 +107,40 @@ const RAW_PHOTOS = [
   },
 ] as const
 
+type ScatterProfile = {
+  horizontalSpread: number
+  verticalSpread: number
+  verticalJitter: number
+}
+
+const MOBILE_LAYOUT_MAX = 680
+const NARROW_LAYOUT_MAX = 700
+
+const DEFAULT_SCATTER: ScatterProfile = {
+  horizontalSpread: 1,
+  verticalSpread: 1,
+  verticalJitter: 0,
+}
+
+const MOBILE_SCATTER: ScatterProfile = {
+  horizontalSpread: 1,
+  verticalSpread: 1.08,
+  verticalJitter: 56,
+}
+
+const NARROW_SCATTER: ScatterProfile = {
+  horizontalSpread: 1.18,
+  verticalSpread: 1,
+  verticalJitter: 0,
+}
+
+function getScatterProfile(width?: number): ScatterProfile {
+  if (width === undefined) return DEFAULT_SCATTER
+  if (width <= MOBILE_LAYOUT_MAX) return MOBILE_SCATTER
+  if (width <= NARROW_LAYOUT_MAX) return NARROW_SCATTER
+  return DEFAULT_SCATTER
+}
+
 /** Deterministic PRNG for SSR-friendly initial render */
 function seededRandom(seed: number) {
   let s = seed % 2147483647
@@ -118,18 +152,24 @@ function seededRandom(seed: number) {
 }
 
 /** Generates an organic, randomized tabletop scatter for all photographs */
-function createRandomScatter(rng: () => number = Math.random): ShufflePhoto[] {
+function createRandomScatter(
+  rng: () => number = Math.random,
+  profile: ScatterProfile = DEFAULT_SCATTER,
+): ShufflePhoto[] {
   // Shuffle photo order so different photos sit on top each time
   const shuffled = [...RAW_PHOTOS].sort(() => rng() - 0.5)
 
   return shuffled.map((photo, i) => {
     if (i === 0) {
-      // Front & center photograph
+      // Front photograph, kept near the centre but still allowed to drift
+      const extraY =
+        profile.verticalJitter > 0 ? (rng() - 0.5) * profile.verticalJitter : 0
+
       return {
         ...photo,
         initialIndex: 0,
-        initX: Math.round((rng() - 0.5) * 44),
-        initY: Math.round((rng() - 0.5) * 28),
+        initX: Math.round((rng() - 0.5) * 44 * profile.horizontalSpread),
+        initY: Math.round((rng() - 0.5) * 28 + extraY),
         initRotate: Math.round((rng() - 0.5) * 16 * 10) / 10,
       }
     }
@@ -141,8 +181,14 @@ function createRandomScatter(rng: () => number = Math.random): ShufflePhoto[] {
     const angle = baseAngle + jitter
     const radius = 72 + rng() * 128
 
-    const x = Math.round(radius * Math.cos(angle) * 1.25)
-    const y = Math.round(radius * Math.sin(angle) * 0.62 + 35)
+    const x = Math.round(
+      radius * Math.cos(angle) * 1.25 * profile.horizontalSpread,
+    )
+    const y = Math.round(
+      radius * Math.sin(angle) * 0.62 * profile.verticalSpread +
+        35 +
+        (rng() - 0.5) * profile.verticalJitter,
+    )
     const rot = Math.round((rng() - 0.5) * 28 * 10) / 10
 
     return {
@@ -358,7 +404,12 @@ export function PhotoShuffle() {
 
   const handleReset = useCallback(() => {
     topZRef.current = RAW_PHOTOS.length + 10
-    const newDeck = createRandomScatter(Math.random)
+    const viewportWidth =
+      typeof window === 'undefined' ? undefined : window.innerWidth
+    const newDeck = createRandomScatter(
+      Math.random,
+      getScatterProfile(viewportWidth),
+    )
     const resetZ: Record<string, number> = {}
     newDeck.forEach((c) => {
       resetZ[c.id] = newDeck.length - c.initialIndex
